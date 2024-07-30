@@ -36,7 +36,7 @@ const fileContentResponse = await octokit.rest.repos.getContent({
 	owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
 	repo: context.payload.pull_request["head"]["repo"]["name"],
 	path: contributorsFile,
-	ref: context.payload.pull_request["head"]["ref"],
+	ref: "refs/heads/main",
 });
 
 const contributors = (yaml.load(
