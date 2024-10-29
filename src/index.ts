@@ -33,8 +33,11 @@ const authors = Array.from(
 ).sort();
 
 const fileContentResponse = await octokit.rest.repos.getContent({
-	owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
-	repo: context.payload.pull_request["head"]["repo"]["name"],
+	// hard-coded owner and repo to debug an issue with PR from a fork
+	// owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
+	// repo: context.payload.pull_request["head"]["repo"]["name"],
+	owner: "kiesraad",
+	repo: "abacus",
 	path: contributorsFile,
 	ref: "refs/heads/main",
 });
