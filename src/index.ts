@@ -1,4 +1,4 @@
-import { getInput, setOutput } from "@actions/core";
+import { getInput, setOutput, info } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import type { components } from "@octokit/openapi-types";
 import yaml from "js-yaml";
@@ -32,7 +32,10 @@ const authors = Array.from(
 	)
 ).sort();
 
-console.log(authors)
+info(authors.toString())
+
+info(context.payload.pull_request["head"]["repo"]["owner"]["login"])
+info(context.payload.pull_request["head"]["repo"]["name"])
 
 const fileContentResponse = await octokit.rest.repos.getContent({
 	// hard-coded owner and repo to debug an issue with PR from a fork
@@ -44,7 +47,7 @@ const fileContentResponse = await octokit.rest.repos.getContent({
 	ref: "refs/heads/main",
 });
 
-console.log(fileContentResponse)
+info(fileContentResponse.toString())
 
 const contributors = (yaml.load(
 	Buffer.from(
@@ -53,7 +56,7 @@ const contributors = (yaml.load(
 	).toString()
 ) ?? []) as string[];
 
-console.log(contributors)
+info(contributors.toString())
 
 const missing = authors.filter(
 	(author) => contributors.includes(author) === false
