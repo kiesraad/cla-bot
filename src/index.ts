@@ -32,6 +32,8 @@ const authors = Array.from(
 	)
 ).sort();
 
+console.log(authors)
+
 const fileContentResponse = await octokit.rest.repos.getContent({
 	// hard-coded owner and repo to debug an issue with PR from a fork
 	// owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
@@ -42,12 +44,16 @@ const fileContentResponse = await octokit.rest.repos.getContent({
 	ref: "refs/heads/main",
 });
 
+console.log(fileContentResponse)
+
 const contributors = (yaml.load(
 	Buffer.from(
 		(fileContentResponse.data as components["schemas"]["content-file"]).content,
 		"base64"
 	).toString()
 ) ?? []) as string[];
+
+console.log(contributors)
 
 const missing = authors.filter(
 	(author) => contributors.includes(author) === false
