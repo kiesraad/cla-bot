@@ -1,4 +1,4 @@
-import { getInput, setOutput, info } from "@actions/core";
+import { getInput, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import type { components } from "@octokit/openapi-types";
 import yaml from "js-yaml";
@@ -32,22 +32,15 @@ const authors = Array.from(
 	)
 ).sort();
 
-info(authors.toString())
-
-info(context.payload.pull_request["head"]["repo"]["owner"]["login"])
-info(context.payload.pull_request["head"]["repo"]["name"])
-
 const fileContentResponse = await octokit.rest.repos.getContent({
-	// hard-coded owner and repo to debug an issue with PR from a fork
-	// owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
-	// repo: context.payload.pull_request["head"]["repo"]["name"],
+	// TODO: Get owner and repo from context, but make sure it's the receiving
+	// owner and repo. So not context.payload.pull_request["head"]["repo"],
+	// which in case of a PR from a fork, is the forked repo, not our repo.
 	owner: "kiesraad",
 	repo: "abacus",
 	path: contributorsFile,
 	ref: "refs/heads/main",
 });
-
-info(fileContentResponse.toString())
 
 const contributors = (yaml.load(
 	Buffer.from(
@@ -55,8 +48,6 @@ const contributors = (yaml.load(
 		"base64"
 	).toString()
 ) ?? []) as string[];
-
-info(contributors.toString())
 
 const missing = authors.filter(
 	(author) => contributors.includes(author) === false
