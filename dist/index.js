@@ -29106,21 +29106,16 @@ if (missingAuthors.length > 0) {
 const authors = Array.from(new Set(commits.data
     .filter((commit) => commit.author.type.toLowerCase() !== "bot")
     .map((commit) => commit.author.login))).sort();
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(authors.toString());
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.head.repo.owner.login);
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.head.repo.name);
 const fileContentResponse = await octokit.rest.repos.getContent({
-    // hard-coded owner and repo to debug an issue with PR from a fork
-    // owner: context.payload.pull_request["head"]["repo"]["owner"]["login"],
-    // repo: context.payload.pull_request["head"]["repo"]["name"],
+    // TODO: Get owner and repo from context, but make sure it's the receiving
+    // owner and repo. So not context.payload.pull_request["head"]["repo"],
+    // which in case of a PR from a fork, is the forked repo, not our repo.
     owner: "kiesraad",
     repo: "abacus",
     path: contributorsFile,
     ref: "refs/heads/main",
 });
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(fileContentResponse.toString());
 const contributors = (js_yaml__WEBPACK_IMPORTED_MODULE_2__/* ["default"].load */ .ZP.load(Buffer.from(fileContentResponse.data.content, "base64").toString()) ?? []);
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(contributors.toString());
 const missing = authors.filter((author) => contributors.includes(author) === false);
 if (missing.length > 0) {
     console.log(`Not all contributors have signed the CLA. Missing: ${missing.join(", ")}`);
