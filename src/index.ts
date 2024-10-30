@@ -1,4 +1,4 @@
-import { getInput, setOutput, info } from "@actions/core";
+import { info, getInput, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import type { components } from "@octokit/openapi-types";
 import yaml from "js-yaml";
@@ -11,9 +11,6 @@ if (!context.payload.pull_request) {
 }
 
 const octokit = getOctokit(githubToken);
-
-info(`owner from context: ${context.repo.owner}`)
-info(`repo from context: ${context.repo.repo}`)
 
 const commits = await octokit.rest.pulls.listCommits({
 	owner: context.repo.owner,
@@ -35,12 +32,12 @@ const authors = Array.from(
 	)
 ).sort();
 
-info(`authors: ${authors}`)
+info(`authors info: ${authors}`)
+console.log(`authors log: ${authors}`)
 
 const fileContentResponse = await octokit.rest.repos.getContent({
-	// TODO: Get owner and repo from context, but make sure it's the receiving
-	// owner and repo. So not context.payload.pull_request["head"]["repo"],
-	// which in case of a PR from a fork, is the forked repo, not our repo.
+	// "base" so we retrieve the contributors file from the receiving repo,
+	// not from the submitting one, which can be a fork we don't own
 	owner: context.payload.pull_request["base"]["repo"]["owner"]["login"],
 	repo: context.payload.pull_request["base"]["repo"]["name"],
 	path: contributorsFile,
