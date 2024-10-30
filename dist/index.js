@@ -29094,8 +29094,6 @@ if (!_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request) 
     throw new Error("No pull request context available");
 }
 const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(githubToken);
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`owner from context: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner}`);
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`repo from context: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo}`);
 const commits = await octokit.rest.pulls.listCommits({
     owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
     repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
@@ -29108,11 +29106,11 @@ if (missingAuthors.length > 0) {
 const authors = Array.from(new Set(commits.data
     .filter((commit) => commit.author.type.toLowerCase() !== "bot")
     .map((commit) => commit.author.login))).sort();
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`authors: ${authors}`);
+(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`authors info: ${authors}`);
+console.log(`authors log: ${authors}`);
 const fileContentResponse = await octokit.rest.repos.getContent({
-    // TODO: Get owner and repo from context, but make sure it's the receiving
-    // owner and repo. So not context.payload.pull_request["head"]["repo"],
-    // which in case of a PR from a fork, is the forked repo, not our repo.
+    // "base" so we retrieve the contributors file from the receiving repo,
+    // not from the submitting one, which can be a fork we don't own
     owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.base.repo.owner.login,
     repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.base.repo.name,
     path: contributorsFile,
