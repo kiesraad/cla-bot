@@ -29106,7 +29106,6 @@ if (missingAuthors.length > 0) {
 const authors = Array.from(new Set(commits.data
     .filter((commit) => commit.author.type.toLowerCase() !== "bot")
     .map((commit) => commit.author.login))).sort();
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`authors info: ${authors}`);
 console.log(`authors log: ${authors}`);
 const fileContentResponse = await octokit.rest.repos.getContent({
     // "base" so we retrieve the contributors file from the receiving repo,
@@ -29117,7 +29116,7 @@ const fileContentResponse = await octokit.rest.repos.getContent({
     ref: "refs/heads/main",
 });
 const contributors = (js_yaml__WEBPACK_IMPORTED_MODULE_2__/* ["default"].load */ .ZP.load(Buffer.from(fileContentResponse.data.content, "base64").toString()) ?? []);
-(0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`contributors: ${contributors}`);
+console.log(`contributors: ${contributors}`);
 const missing = authors.filter((author) => contributors.includes(author) === false);
 if (missing.length > 0) {
     console.log(`Not all contributors have signed the CLA. Missing: ${missing.join(", ")}`);
