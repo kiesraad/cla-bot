@@ -29106,16 +29106,17 @@ if (missingAuthors.length > 0) {
 const authors = Array.from(new Set(commits.data
     .filter((commit) => commit.author.type.toLowerCase() !== "bot")
     .map((commit) => commit.author.login))).sort();
+console.log(`authors: ${authors}`);
 const fileContentResponse = await octokit.rest.repos.getContent({
-    // TODO: Get owner and repo from context, but make sure it's the receiving
-    // owner and repo. So not context.payload.pull_request["head"]["repo"],
-    // which in case of a PR from a fork, is the forked repo, not our repo.
-    owner: "kiesraad",
-    repo: "abacus",
+    // "base" so we retrieve the contributors file from the receiving repo,
+    // not from the submitting one, which can be a fork we don't own
+    owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.base.repo.owner.login,
+    repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.pull_request.base.repo.name,
     path: contributorsFile,
     ref: "refs/heads/main",
 });
 const contributors = (js_yaml__WEBPACK_IMPORTED_MODULE_2__/* ["default"].load */ .ZP.load(Buffer.from(fileContentResponse.data.content, "base64").toString()) ?? []);
+console.log(`contributors: ${contributors}`);
 const missing = authors.filter((author) => contributors.includes(author) === false);
 if (missing.length > 0) {
     console.log(`Not all contributors have signed the CLA. Missing: ${missing.join(", ")}`);

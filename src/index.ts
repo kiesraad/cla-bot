@@ -32,12 +32,13 @@ const authors = Array.from(
 	)
 ).sort();
 
+console.log(`authors: ${authors}`)
+
 const fileContentResponse = await octokit.rest.repos.getContent({
-	// TODO: Get owner and repo from context, but make sure it's the receiving
-	// owner and repo. So not context.payload.pull_request["head"]["repo"],
-	// which in case of a PR from a fork, is the forked repo, not our repo.
-	owner: "kiesraad",
-	repo: "abacus",
+	// "base" so we retrieve the contributors file from the receiving repo,
+	// not from the submitting one, which can be a fork we don't own
+	owner: context.payload.pull_request["base"]["repo"]["owner"]["login"],
+	repo: context.payload.pull_request["base"]["repo"]["name"],
 	path: contributorsFile,
 	ref: "refs/heads/main",
 });
@@ -48,6 +49,8 @@ const contributors = (yaml.load(
 		"base64"
 	).toString()
 ) ?? []) as string[];
+
+console.log(`contributors: ${contributors}`)
 
 const missing = authors.filter(
 	(author) => contributors.includes(author) === false
