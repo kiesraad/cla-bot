@@ -1,4 +1,4 @@
-import { info, getInput, setOutput } from "@actions/core";
+import { getInput, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import type { components } from "@octokit/openapi-types";
 import yaml from "js-yaml";
@@ -32,7 +32,6 @@ const authors = Array.from(
 	)
 ).sort();
 
-info(`authors info: ${authors}`)
 console.log(`authors log: ${authors}`)
 
 const fileContentResponse = await octokit.rest.repos.getContent({
@@ -51,7 +50,7 @@ const contributors = (yaml.load(
 	).toString()
 ) ?? []) as string[];
 
-info(`contributors: ${contributors}`)
+console.log(`contributors: ${contributors}`)
 
 const missing = authors.filter(
 	(author) => contributors.includes(author) === false
