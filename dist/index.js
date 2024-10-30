@@ -29106,7 +29106,7 @@ if (missingAuthors.length > 0) {
 const authors = Array.from(new Set(commits.data
     .filter((commit) => commit.author.type.toLowerCase() !== "bot")
     .map((commit) => commit.author.login))).sort();
-console.log(`authors log: ${authors}`);
+console.log(`authors: ${authors}`);
 const fileContentResponse = await octokit.rest.repos.getContent({
     // "base" so we retrieve the contributors file from the receiving repo,
     // not from the submitting one, which can be a fork we don't own
