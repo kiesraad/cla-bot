@@ -32,7 +32,7 @@ const authors = Array.from(
 	)
 ).sort();
 
-console.log(`authors log: ${authors}`)
+console.log(`authors: ${authors}`)
 
 const fileContentResponse = await octokit.rest.repos.getContent({
 	// "base" so we retrieve the contributors file from the receiving repo,
