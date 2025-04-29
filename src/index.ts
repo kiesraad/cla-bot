@@ -3,13 +3,20 @@ import { context, getOctokit } from "@actions/github";
 import type { components } from "@octokit/openapi-types";
 import yaml from "js-yaml";
 
-const githubToken = getInput("github-token");
-const contributorsFile = getInput("contributors-file");
-
 if (!context.payload.pull_request) {
 	throw new Error("No pull request context available");
 }
 
+// "base" so we retrieve the contributors file from the receiving repo,
+// not from the submitting one, which can be a fork we don't own
+const contributorsRepositoryOwner =
+	getInput("contributors-repository-owner") ||
+	context.payload.pull_request["base"]["repo"]["owner"]["login"];
+const contributorsRepositoryName =
+	getInput("contributors-repository-name") ||
+	context.payload.pull_request["base"]["repo"]["name"];
+const contributorsFile = getInput("contributors-file");
+const githubToken = getInput("github-token");
 const octokit = getOctokit(githubToken);
 
 const commits = await octokit.rest.pulls.listCommits({
@@ -28,17 +35,15 @@ const authors = Array.from(
 	new Set(
 		commits.data
 			.filter((commit) => commit.author!.type.toLowerCase() !== "bot")
-			.map((commit) => commit.author!.login)
-	)
+			.map((commit) => commit.author!.login),
+	),
 ).sort();
 
-console.log(`authors: ${authors}`)
+console.log(`authors: ${authors}`);
 
 const fileContentResponse = await octokit.rest.repos.getContent({
-	// "base" so we retrieve the contributors file from the receiving repo,
-	// not from the submitting one, which can be a fork we don't own
-	owner: context.payload.pull_request["base"]["repo"]["owner"]["login"],
-	repo: context.payload.pull_request["base"]["repo"]["name"],
+	owner: contributorsRepositoryOwner,
+	repo: contributorsRepositoryName,
 	path: contributorsFile,
 	ref: "refs/heads/main",
 });
@@ -46,19 +51,19 @@ const fileContentResponse = await octokit.rest.repos.getContent({
 const contributors = (yaml.load(
 	Buffer.from(
 		(fileContentResponse.data as components["schemas"]["content-file"]).content,
-		"base64"
-	).toString()
+		"base64",
+	).toString(),
 ) ?? []) as string[];
 
-console.log(`contributors: ${contributors}`)
+console.log(`contributors: ${contributors}`);
 
 const missing = authors.filter(
-	(author) => contributors.includes(author) === false
+	(author) => contributors.includes(author) === false,
 );
 
 if (missing.length > 0) {
 	console.log(
-		`Not all contributors have signed the CLA. Missing: ${missing.join(", ")}`
+		`Not all contributors have signed the CLA. Missing: ${missing.join(", ")}`,
 	);
 
 	setOutput("missing", missing.map((login) => `@${login}`).join(", "));
