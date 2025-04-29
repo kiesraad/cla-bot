@@ -7,8 +7,10 @@ inputs:
     default: ${{ github.token }}
   contributors-repository-owner:
     description: Owner of the repository containing the contributors file
+    required: true
   contributors-repository-name:
     description: Name of the repository containing the contributors file
+    required: true
   contributors-file:
     description: Path to the contributors file
     required: true

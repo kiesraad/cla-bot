@@ -7,14 +7,8 @@ if (!context.payload.pull_request) {
 	throw new Error("No pull request context available");
 }
 
-// "base" so we retrieve the contributors file from the receiving repo,
-// not from the submitting one, which can be a fork we don't own
-const contributorsRepositoryOwner =
-	getInput("contributors-repository-owner") ||
-	context.payload.pull_request["base"]["repo"]["owner"]["login"];
-const contributorsRepositoryName =
-	getInput("contributors-repository-name") ||
-	context.payload.pull_request["base"]["repo"]["name"];
+const contributorsRepositoryOwner = getInput("contributors-repository-owner");
+const contributorsRepositoryName = getInput("contributors-repository-name");
 const contributorsFile = getInput("contributors-file");
 const githubToken = getInput("github-token");
 const octokit = getOctokit(githubToken);
