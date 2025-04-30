@@ -1,14 +1,20 @@
-name: 'CLA Bot'
-description: 'Check if a contributor has signed the CLA'
+name: "CLA Bot"
+description: "Check if a contributor has signed the CLA"
 inputs:
   github-token:
     description: GitHub Token
     required: true
     default: ${{ github.token }}
+  contributors-repository-owner:
+    description: Owner of the repository containing the contributors file
+    required: true
+  contributors-repository-name:
+    description: Name of the repository containing the contributors file
+    required: true
   contributors-file:
-    description: Contributors File
+    description: Path to the contributors file
     required: true
     default: contributors.yml
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
