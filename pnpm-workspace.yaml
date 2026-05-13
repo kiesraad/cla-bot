@@ -1,0 +1,8 @@
+blockExoticSubdeps: true
+minimumReleaseAge: 4320
+trustPolicy: no-downgrade
+engineStrict: true
+packageManagerStrict: true
+packageManagerStrictVersion: true
+strictDepBuilds: true
+strictPeerDependencies: true
