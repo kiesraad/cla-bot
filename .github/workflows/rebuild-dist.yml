@@ -34,14 +34,12 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build
         run: pnpm build
-      - name: Commit and push dist if changed
-        run: |
-          if git diff --quiet dist/; then
-            echo "dist/ unchanged, nothing to commit"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/
-          git commit -m "Rebuild dist"
-          git push
+      # Created commit through the GitHub API, which signs it.
+      - name: Stage dist
+        run: git add --all dist/
+      - name: Commit dist if changed
+        uses: grafana/github-api-commit-action@b1d81091e8480dd11fcea8bc1f0ab977a0376ca5 # v1.0.0
+        with:
+          commit-message: Rebuild dist
+          success-if-no-changes: true
+          token: ${{ github.token }}
